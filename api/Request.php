@@ -6,6 +6,16 @@
  *
  */
 
+/**
+ * @OA\Info(
+ *   title="Offentligedata API",
+ *   version="1.0.0",
+ *   @OA\Contact(
+ *     email="mh@mapcentia.com"
+ *   )
+ * )
+ */
+
 namespace app\extensions\offentligedata\api;
 
 use app\inc\Controller;
@@ -15,6 +25,33 @@ use app\models\Sql;
 
 class Request extends Controller
 {
+    /**
+     * @return array
+     *
+     * @OA\Post(
+     *   path="/extensions/offentligedata/api/request",
+     *   tags={"Offentligedata"},
+     *   summary="Henter offentlige data ",
+     *   @OA\RequestBody(
+     *     description="Parametre med session_id og værdier til SQL'en ",
+     *     @OA\MediaType(
+     *       mediaType="application/json",
+     *       @OA\Schema(
+     *         type="object",
+     *         required={"session_id","komkode","startdate","enddate"},
+     *         @OA\Property(property="session_id",type="string",example="9krf6cujiqgivnlm6uk2p1hglh"),
+     *         @OA\Property(property="komkode",type="string",example="420"),
+     *         @OA\Property(property="startdate",type="string",example="2020-07-28"),
+     *         @OA\Property(property="enddate",type="string",example="2020-07-31")
+     *       )
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response="200",
+     *     description="Operation status"
+     *   )
+     * )
+     */
     public function post_index(): array
     {
         $parsedBody = json_decode(Input::getBody(), true);

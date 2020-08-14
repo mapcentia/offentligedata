@@ -21,6 +21,7 @@ namespace app\extensions\offentligedata\api;
 use app\inc\Controller;
 use app\inc\Input;
 use app\models\Sql;
+use app\inc\Session;
 
 
 class Request extends Controller
@@ -58,8 +59,8 @@ class Request extends Controller
 
         // Check if session id from body is active
         session_id($parsedBody["session_id"]);
-        session_start();
-        if (empty($_SESSION["auth"])) {
+        Session::start();
+        if (!Session::isAuth()) {
             $response['success'] = false;
             $response['message'] = "No session";
             return $response;

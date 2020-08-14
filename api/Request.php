@@ -22,6 +22,7 @@ use app\inc\Controller;
 use app\inc\Input;
 use app\models\Sql;
 use app\inc\Session;
+use app\models\Database;
 
 
 class Request extends Controller
@@ -39,11 +40,12 @@ class Request extends Controller
      *       mediaType="application/json",
      *       @OA\Schema(
      *         type="object",
-     *         required={"session_id","komkode","startdate","enddate"},
+     *         required={"session_id","komkode","startdate","enddate","database"},
      *         @OA\Property(property="session_id",type="string",example="9krf6cujiqgivnlm6uk2p1hglh"),
      *         @OA\Property(property="komkode",type="string",example="420"),
      *         @OA\Property(property="startdate",type="string",example="2020-07-28"),
-     *         @OA\Property(property="enddate",type="string",example="2020-07-31")
+     *         @OA\Property(property="enddate",type="string",example="2020-07-31"),
+     *         @OA\Property(property="database",type="string",example="ballerup")
      *       )
      *     )
      *   ),
@@ -63,6 +65,7 @@ class Request extends Controller
         if (!Session::isAuth()) {
             $response['success'] = false;
             $response['message'] = "No session";
+            $response['code'] = "401";
             return $response;
         }
 
@@ -70,6 +73,10 @@ class Request extends Controller
         $komKode = $parsedBody["komkode"];
         $startDate = $parsedBody["startdate"];
         $endDate = $parsedBody["enddate"];
+        $database = $parsedBody["database"];
+
+        // Set the database
+        Database::setDb($database);
 
         // Build SQL SELECT
         $url = "SELECT * FROM cvr.flyt_fad_dev({$komKode},'{$startDate}','{$endDate}')";

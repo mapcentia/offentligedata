@@ -22,7 +22,7 @@ use app\inc\Controller;
 use app\inc\Input;
 use app\models\Sql;
 use app\inc\Session;
-use app\models\Database;
+use app\inc\Connection;
 
 
 class Request extends Controller
@@ -75,15 +75,16 @@ class Request extends Controller
         $endDate = $parsedBody["enddate"];
         $database = $parsedBody["database"];
 
-        // Set the database
-        Database::setDb($database);
-
         // Build SQL SELECT
         $url = "SELECT * FROM cvr.flyt_fad_dev({$komKode},'{$startDate}','{$endDate}')";
 
         // Use the SQL API to run the SELECT and get GeoJSON in return
-        $sqlObj = new Sql("4326");
-        $response = $sqlObj->sql($url, 'utf8'); // This is a PHP array
+        $sqlApi = new Sql(connection:  new Connection(database: $database));
+
+        $sqlApi->withTransaction(function () use (&$response, $sqlApi, $url) {
+                $sqlApi->setSRS('4326');
+            $response = $sqlApi->sql($url, 'utf8');
+        });
 
         return $response; // GC2 framework will transform the array to json
     }
